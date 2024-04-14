@@ -200,18 +200,43 @@ def success(request):
 
 
 @login_required
+# def trips(request):
+#     user = request.user
+#     bookings = Booking.objects.filter(user=user)
+#     hotel_bookings = []
+#     for booking in bookings:
+#         hotel = hotels.objects.get(name=booking.items_json)
+#         hotel_booking_info = {
+#             'hotel_name': hotel.name,
+#             'check_in_date': hotel.check_in_date,
+#             'check_out_date': hotel.check_out_date,
+#             'city':booking.city,
+#             'paid': booking.paid
+#         }
+#         hotel_bookings.append(hotel_booking_info)
+#     return render(request, 'trips.html', {'hotel_bookings': hotel_bookings})
+
 def trips(request):
     user = request.user
-    bookings = Booking.objects.filter(user=user)
     hotel_bookings = []
-    for booking in bookings:
-        hotel = hotels.objects.get(name=booking.items_json)
-        hotel_booking_info = {
-            'hotel_name': hotel.name,
-            'check_in_date': hotel.check_in_date,
-            'check_out_date': hotel.check_out_date,
-            'city':booking.city,
-            'paid': booking.paid
-        }
-        hotel_bookings.append(hotel_booking_info)
-    return render(request, 'trips.html', {'hotel_bookings': hotel_bookings})
+    package_bookings = []
+
+    # Retrieve hotel bookings and related hotel check-in dates
+    hotel_bookings_queryset = Booking.objects.filter(user=user, booking_type='hotel')
+    for booking in hotel_bookings_queryset:
+        try:
+            hotel = hotels.objects.get(name=booking.items_json)
+            hotel_booking_info = {
+                'hotel_name': hotel.name,
+                'check_in_date': hotel.check_in_date,
+                'check_out_date': hotel.check_out_date,
+                'city': booking.city,
+                'paid': booking.paid
+            }
+            hotel_bookings.append(hotel_booking_info)
+        except hotels.DoesNotExist:
+            pass
+
+    package_bookings = Booking.objects.filter(user=user, booking_type='package')
+
+    return render(request, 'trips.html', {'hotel_bookings': hotel_bookings, 'package_bookings': package_bookings})

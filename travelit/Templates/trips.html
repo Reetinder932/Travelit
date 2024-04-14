@@ -3,6 +3,7 @@
 
 <head>
     <title>Your Trips</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,11 +18,12 @@
         }
 
         .trip-container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
         }
 
         .trip-card {
+            display: none;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -40,33 +42,83 @@
         .paid-no {
             color: #f44336;
         }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-container button {
+            margin: 0 10px;
+        }
     </style>
 </head>
 
 <body>
     <div class="trip-container">
         <h2>Your Trips</h2>
-        <div>
+        <div class="btn-container">
+            <button id="hotelBtn" class="btn btn-primary">Hotel Bookings</button>
+            <button id="packageBtn" class="btn btn-primary">Package Bookings</button>
+        </div>
+        <div id="hotelBookings" class="trip-card">
+            <h3>Hotel Bookings</h3>
             {% for booking in hotel_bookings %}
-            <div class="trip-card">
-                <div class="trip-details">
-                    <strong>Hotel Name:</strong> {{ booking.hotel_name }}<br>
-                    <strong>Check-in Date:</strong> {{ booking.check_in_date }}<br>
-                    <strong>Check-out Date:</strong> {{ booking.check_out_date }}<br>
-                    <strong>city:</strong> {{ booking.city }}<br>
-                </div>
-                <div class="paid-status">
-                    <strong>Paid:</strong>
-                    {% if booking.paid %}
-                    <span class="paid-yes">Yes</span>
-                    {% else %}
-                    <span class="paid-no">No</span>
-                    {% endif %}
-                </div>
+            <div class="trip-details">
+                <strong>Hotel Name:</strong> {{ booking.hotel_name }}<br>
+                <strong>Check-in Date:</strong> {{ booking.check_in_date }}<br>
+                <strong>Check-out Date:</strong> {{ booking.check_out_date }}<br>
+                <strong>City:</strong> {{ booking.city }}<br>
+                <strong>Paid:</strong>
+                {% if booking.paid %}
+                <span class="paid-yes">Yes</span>
+                {% else %}
+                <span class="paid-no">No</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        <div id="packageBookings" class="trip-card">
+            <h3>Package Bookings</h3>
+            {% for booking in package_bookings %}
+            <div class="trip-details">
+                <strong>Destination Name:</strong> {{ booking.items_json }}<br>
+                <strong>Check-in Date:</strong> {{ booking.check_in_date }}<br>
+                <strong>Number of Passengers:</strong> {{ booking.num_passengers }}<br>
+                <strong>Paid:</strong>
+                {% if booking.paid %}
+                <span class="paid-yes">Yes</span>
+                {% else %}
+                <span class="paid-no">No</span>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var hotelBtn = document.getElementById('hotelBtn');
+            var packageBtn = document.getElementById('packageBtn');
+            var hotelBookings = document.getElementById('hotelBookings');
+            var packageBookings = document.getElementById('packageBookings');
+
+            // Initially show hotel bookings
+            hotelBookings.style.display = 'block';
+
+            hotelBtn.addEventListener('click', function () {
+                hotelBookings.style.display = 'block';
+                packageBookings.style.display = 'none';
+            });
+
+            packageBtn.addEventListener('click', function () {
+                hotelBookings.style.display = 'none';
+                packageBookings.style.display = 'block';
+            });
+        });
+
+    </script>
 </body>
 
 </html>
