@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Your Trips</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .trip-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .trip-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .trip-details {
+            margin-bottom: 15px;
+        }
+
+        .paid-yes {
+            color: #4CAF50;
+        }
+
+        .paid-no {
+            color: #f44336;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="trip-container">
+        <h2>Your Trips</h2>
+        <div>
+            {% for booking in hotel_bookings %}
+            <div class="trip-card">
+                <div class="trip-details">
+                    <strong>Hotel Name:</strong> {{ booking.hotel_name }}<br>
+                    <strong>Check-in Date:</strong> {{ booking.check_in_date }}<br>
+                    <strong>Check-out Date:</strong> {{ booking.check_out_date }}<br>
+                    <strong>city:</strong> {{ booking.city }}<br>
+                </div>
+                <div class="paid-status">
+                    <strong>Paid:</strong>
+                    {% if booking.paid %}
+                    <span class="paid-yes">Yes</span>
+                    {% else %}
+                    <span class="paid-no">No</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+
+</html>

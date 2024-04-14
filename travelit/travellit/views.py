@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .models import Destination
 from .models import Detailed_desc
-from .models import pessanger_detail
+from .models import PassengerDetail
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -16,11 +16,17 @@ from django.forms.formsets import formset_factory
 from django.shortcuts import render
 from django.template import Library
 from datetime import datetime
+from .models import hotels,Booking
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
+# from Paytm import Checksum
+import razorpay
+import requests
 
 
 
 import random
+# MERCHANT_KEY = 'kbzk1DSbJiV_O3p5'
 
 def index(request):
     dests = Destination.objects.all()
@@ -81,7 +87,7 @@ def login(request):
 
 def logout(request):
     auth.logout(request)
-    return redirect('index')
+    return redirect('register')
 
 
 
@@ -110,3 +116,102 @@ def search(request):
     except:
         messages.info(request, 'Place not found')
         return redirect('index')
+
+def customize(request):
+     return render(request, 'customized.html', {})
+def hotel(request):
+    if request.method == 'POST':
+        city = request.POST.get('city')
+        check_in_date_str = request.POST.get('check_in_date')
+        check_out_date_str = request.POST.get('check_out_date')
+        try:
+            check_in_date = datetime.strptime(check_in_date_str, '%d-%m-%Y').date()
+            check_out_date = datetime.strptime(check_out_date_str, '%d-%m-%Y').date()
+
+            hotels_list = hotels.objects.filter(city__iexact=city, check_in_date__lte=check_in_date, check_out_date__gte=check_out_date)
+            return render(request, 'hotel.html', {'hotel1': hotels_list, 'city': city, 'check_in_date': check_in_date, 'check_out_date': check_out_date})
+        except ValueError:
+            return HttpResponse("Invalid date format")
+    return render(request, 'search.html')
+
+def flight(request):
+    return render(request,'flight.html',{})
+from django.shortcuts import render
+from .models import Booking
+
+def checkout(request):
+    if request.method == "POST":
+        booking_type = request.POST.get('booking_type')
+        name = request.POST.get('name', '')
+        amount = int(request.POST.get('totalAmount', 0)) * 100
+        email = request.POST.get('email', '')
+        address = request.POST.get('address', '') 
+        city = request.POST.get('city', '')
+        state = request.POST.get('state', '')
+        zip_code = request.POST.get('zip_code', '')
+        phone = request.POST.get('phone', '')
+
+        if booking_type == 'hotel':
+            hotel_name = request.POST.get('hotel_name', '')
+            client = razorpay.Client(auth=("rzp_test_C8d3vHaumly0RS", "FeA9Wry8ckIycxqutkcf2FzW"))
+            payment = client.order.create({'amount': amount, 'currency': 'INR', 'payment_capture': '1'})
+            user = request.user
+            order1 = Booking(user=user, items_json=hotel_name, name=name, email=email, address=address, city=city,
+                            state=state, zip_code=zip_code, phone=phone, amount=amount, order_id=payment['id'], booking_type=booking_type)
+            order1.save()
+
+        else:
+            destination_name = request.POST.get('destination_name', '')
+            check_in_date = request.POST.get('check_in_date', '')
+            num_passengers = request.POST.get('num_passengers', '')
+
+            client = razorpay.Client(auth=("rzp_test_C8d3vHaumly0RS", "FeA9Wry8ckIycxqutkcf2FzW"))
+            payment = client.order.create({'amount': amount, 'currency': 'INR', 'payment_capture': '1'})
+
+            user = request.user
+            order1 = Booking(user=user, items_json=destination_name, name=name, email=email, address=address, city=city,
+                            state=state, zip_code=zip_code, phone=phone, amount=amount, order_id=payment['id'], check_in_date=check_in_date, num_passengers=num_passengers, booking_type=booking_type)
+            order1.save()
+
+        return render(request, 'checkout.html', {'payment': payment})
+
+    else:
+        booking_type = 'hotel' if 'hotel' in request.resolver_match.url_name else 'package'
+        context = {'booking_type': booking_type}
+        return render(request, 'checkout.html', context)
+
+
+@csrf_exempt
+def success(request):
+    if request.method == "POST":
+        a =  (request.POST)
+        order_id = ""
+        for key , val in a.items():
+            if key == "razorpay_order_id":
+                order_id = val
+                break
+    
+        user = Booking.objects.filter(order_id = order_id).first()
+        user.paid = True
+        user.save()
+        
+
+    return render(request, "paymentstatus.html")
+
+
+@login_required
+def trips(request):
+    user = request.user
+    bookings = Booking.objects.filter(user=user)
+    hotel_bookings = []
+    for booking in bookings:
+        hotel = hotels.objects.get(name=booking.items_json)
+        hotel_booking_info = {
+            'hotel_name': hotel.name,
+            'check_in_date': hotel.check_in_date,
+            'check_out_date': hotel.check_out_date,
+            'city':booking.city,
+            'paid': booking.paid
+        }
+        hotel_bookings.append(hotel_booking_info)
+    return render(request, 'trips.html', {'hotel_bookings': hotel_bookings})

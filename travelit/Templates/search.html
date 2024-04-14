@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .jumbotron {
+            background-image: url('https://source.unsplash.com/1600x900/?hotel');
+            background-size: cover;
+            color: white;
+            height: 110vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        form {
+            text-align: center;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body class="jumbotron">
+    <div class="container">
+        <h1>Hotel Search</h1>
+        <form method="post" action="{% url 'hotel' %}">
+            {% csrf_token %}
+            <input type="text" name="city" placeholder="Enter city">
+            <br>
+            <input type="text" name="check_in_date" placeholder="Check-in Date (dd-mm-yyyy)">
+            <br>
+            <input type="text" name="check_out_date" placeholder="Check-out Date (dd-mm-yyyy)">
+            <br>
+            <input type="submit" value="Search">
+        </form>
+    </div>
+</body>
+
+</html>
