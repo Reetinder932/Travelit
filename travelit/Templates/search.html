@@ -1,23 +1,18 @@
+<!-- search.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Search</title>
+    <title>Search</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f0f0f0;
-        }
-
-        .jumbotron {
-            background-image: url('https://source.unsplash.com/1600x900/?hotel');
-            background-size: cover;
-            color: white;
-            height: 110vh;
         }
 
         .container {
@@ -63,18 +58,17 @@
     </style>
 </head>
 
-<body class="jumbotron">
+<body>
     <div class="container">
-        <h1>Hotel Search</h1>
-        <form method="post" action="{% url 'hotel' %}">
+        <h1>Search</h1>
+        <form method="POST"
+            action="{% if source == 'hotel' %}{% url 'hotel' %}{% elif source == 'flight' %}{% url 'flight' %}{% endif %}">
             {% csrf_token %}
-            <input type="text" name="city" placeholder="Enter city">
+            {% for field in form_fields %}
+            <input type="text" name="{{ field }}" placeholder="{{ field|title }}">
             <br>
-            <input type="text" name="check_in_date" placeholder="Check-in Date (dd-mm-yyyy)">
-            <br>
-            <input type="text" name="check_out_date" placeholder="Check-out Date (dd-mm-yyyy)">
-            <br>
-            <input type="submit" value="Search">
+            {% endfor %}
+            <input type="submit" value="search">
         </form>
     </div>
 </body>

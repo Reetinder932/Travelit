@@ -72,13 +72,12 @@
                                     <nav>
                                         <ul id="navigation">
                                             <li><a class="active" href="/">home</a></li>
-                                            <li><a href="about.html">About</a></li>
                                             {% if user.is_authenticated %}
                                             <li>Hello, {{user.username}}</li>
-                                            <li><a href="logout">logout</a></li>
+                                            <li><a href="{%url 'logout'%}">logout</a></li>
                                             {%else%}
-                                            <li><a href="login">Login</a></li>
-                                            <li><a href="register">Register</a></li>
+                                            <li><a href="{%url 'login'%}">Login</a></li>
+                                            <li><a href="{%url 'register'%}">Register</a></li>
                                             {%endif%}
                                         </ul>
                                     </nav>
@@ -196,7 +195,7 @@
                                     </div>
                                     <div class="col-lg-3 col-md-4">
                                         <div class="newsletter_btn">
-                                            <button class="boxed-btn4 " type="submit">Subscribe</button>
+                                            <button class="" type="submit">Subscribe</button>
                                         </div>
                                     </div>
                                 </div>

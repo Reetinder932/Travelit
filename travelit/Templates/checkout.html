@@ -92,6 +92,8 @@
             </div>
             {% endif %}
             <input type="hidden" id="destination_name" name="destination_name">
+
+            <input type="hidden" id="flight_name" name="flight_name">
             <input type="hidden" id="hotel_name" name="hotel_name">
             <input type="hidden" id="totalAmount" name="totalAmount">
             <input type="hidden" id="booking_type" name="booking_type" value="{{ booking_type }}">
@@ -128,7 +130,11 @@
 
             if (bookingType === 'hotel') {
                 totalAmount = localStorage.getItem('hotel_amount');
-            } else {
+            }
+            else if (bookingType === 'flight') {
+                totalAmount = localStorage.getItem('flight_amount');
+            }
+            else {
                 totalAmount = localStorage.getItem('destination_amount');
             }
 
@@ -140,6 +146,9 @@
                 document.getElementById('hotel_name').value = localStorage.getItem('hotel_name');
             } else if (bookingType === 'package') {
                 document.getElementById('destination_name').value = localStorage.getItem('destination_name');
+            }
+            else {
+                document.getElementById('flight_name').value = localStorage.getItem('flight_name');
             }
 
             document.getElementById('num_passengers').addEventListener('input', function () {

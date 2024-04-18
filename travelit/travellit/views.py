@@ -16,7 +16,7 @@ from django.forms.formsets import formset_factory
 from django.shortcuts import render
 from django.template import Library
 from datetime import datetime
-from .models import hotels,Booking
+from .models import hotels,Booking,flight
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 # from Paytm import Checksum
@@ -105,20 +105,15 @@ def destination_details(request,city_name):
     request.session['city'] = city_name
     return render(request,'destination_details.html',{'dest':dest})
 
-
-def search(request):
-    try:
-        place1 = request.session.get('place')
-        print(place1)
-        dest = Detailed_desc.objects.get(dest_name=place1)
-        print(place1)
-        return render(request, 'destination_details.html', {'dest': dest})
-    except:
-        messages.info(request, 'Place not found')
-        return redirect('index')
-
+def search(request, source): 
+    if source == 'hotel':
+        form_fields = ['city', 'check_in_date', 'check_out_date']  
+    elif source == 'flight':
+        form_fields = ['from_city', 'to_city', 'depart']
+    return render(request, 'search.html', {'form_fields': form_fields, 'source': source})
 def customize(request):
      return render(request, 'customized.html', {})
+
 def hotel(request):
     if request.method == 'POST':
         city = request.POST.get('city')
@@ -127,17 +122,29 @@ def hotel(request):
         try:
             check_in_date = datetime.strptime(check_in_date_str, '%d-%m-%Y').date()
             check_out_date = datetime.strptime(check_out_date_str, '%d-%m-%Y').date()
-
             hotels_list = hotels.objects.filter(city__iexact=city, check_in_date__lte=check_in_date, check_out_date__gte=check_out_date)
             return render(request, 'hotel.html', {'hotel1': hotels_list, 'city': city, 'check_in_date': check_in_date, 'check_out_date': check_out_date})
         except ValueError:
             return HttpResponse("Invalid date format")
-    return render(request, 'search.html')
+    return redirect('search', source='hotel')
 
-def flight(request):
-    return render(request,'flight.html',{})
-from django.shortcuts import render
-from .models import Booking
+def flight1(request):
+    if request.method == 'POST':
+        from_city = request.POST.get('from_city')
+        to_city = request.POST.get('to_city')
+        depart_date_str = request.POST.get('depart')
+        if depart_date_str:
+            try:
+                depart_date = datetime.strptime(depart_date_str, '%d-%m-%Y').date()
+                flight_list = flight.objects.filter(
+                    from_city__iexact=from_city,
+                    to_city__iexact=to_city,
+                    depart=depart_date
+                )
+                return render(request, 'flight.html', {'flight_list': flight_list, 'from_city': from_city, 'to_city': to_city, 'depart_date': depart_date})
+            except ValueError:
+                return HttpResponse("Invalid input format")
+    return redirect('search', source='flight')
 
 def checkout(request):
     if request.method == "POST":
@@ -160,6 +167,16 @@ def checkout(request):
                             state=state, zip_code=zip_code, phone=phone, amount=amount, order_id=payment['id'], booking_type=booking_type)
             order1.save()
 
+        
+        elif booking_type == 'flight':
+            flight_name = request.POST.get('flight_name', '')
+            client = razorpay.Client(auth=("rzp_test_C8d3vHaumly0RS", "FeA9Wry8ckIycxqutkcf2FzW"))
+            payment = client.order.create({'amount': amount, 'currency': 'INR', 'payment_capture': '1'})
+            user = request.user
+            order1 = Booking(user=user, items_json=flight_name, name=name, email=email, address=address, city=city,
+                            state=state, zip_code=zip_code, phone=phone, amount=amount, order_id=payment['id'], booking_type=booking_type)
+            order1.save()    
+
         else:
             destination_name = request.POST.get('destination_name', '')
             check_in_date = request.POST.get('check_in_date', '')
@@ -176,9 +193,15 @@ def checkout(request):
         return render(request, 'checkout.html', {'payment': payment})
 
     else:
-        booking_type = 'hotel' if 'hotel' in request.resolver_match.url_name else 'package'
+        if 'hotel' in request.resolver_match.url_name:
+           booking_type = 'hotel'
+        elif 'flight' in request.resolver_match.url_name:
+           booking_type = 'flight'
+        else:
+           booking_type = 'package'  
         context = {'booking_type': booking_type}
-        return render(request, 'checkout.html', context)
+    return render(request, 'checkout.html', context)
+
 
 
 @csrf_exempt
@@ -200,28 +223,12 @@ def success(request):
 
 
 @login_required
-# def trips(request):
-#     user = request.user
-#     bookings = Booking.objects.filter(user=user)
-#     hotel_bookings = []
-#     for booking in bookings:
-#         hotel = hotels.objects.get(name=booking.items_json)
-#         hotel_booking_info = {
-#             'hotel_name': hotel.name,
-#             'check_in_date': hotel.check_in_date,
-#             'check_out_date': hotel.check_out_date,
-#             'city':booking.city,
-#             'paid': booking.paid
-#         }
-#         hotel_bookings.append(hotel_booking_info)
-#     return render(request, 'trips.html', {'hotel_bookings': hotel_bookings})
-
 def trips(request):
     user = request.user
     hotel_bookings = []
     package_bookings = []
+    flight_bookings=[]
 
-    # Retrieve hotel bookings and related hotel check-in dates
     hotel_bookings_queryset = Booking.objects.filter(user=user, booking_type='hotel')
     for booking in hotel_bookings_queryset:
         try:
@@ -236,7 +243,21 @@ def trips(request):
             hotel_bookings.append(hotel_booking_info)
         except hotels.DoesNotExist:
             pass
-
+        
+    flight_bookings_queryset = Booking.objects.filter(user=user, booking_type='flight')
+    for booking in flight_bookings_queryset:
+        try:
+            flights = flight.objects.get(name=booking.items_json)
+            flight_booking_info = {
+                'flight_name': flights.name,
+                'departure':flights.depart ,
+                'from_city': flights.from_city,
+                'to_city': flights.to_city,
+                'paid': booking.paid
+            }
+            flight_bookings.append(flight_booking_info)
+        except flight.DoesNotExist:
+            pass
     package_bookings = Booking.objects.filter(user=user, booking_type='package')
 
-    return render(request, 'trips.html', {'hotel_bookings': hotel_bookings, 'package_bookings': package_bookings})
+    return render(request, 'trips.html', {'hotel_bookings': hotel_bookings, 'package_bookings': package_bookings,'flight_bookings':flight_bookings})

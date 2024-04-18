@@ -61,6 +61,7 @@
         <div class="btn-container">
             <button id="hotelBtn" class="btn btn-primary">Hotel Bookings</button>
             <button id="packageBtn" class="btn btn-primary">Package Bookings</button>
+            <button id="flightBtn" class="btn btn-primary">Flight Bookings</button>
         </div>
         <div id="hotelBookings" class="trip-card">
             <h3>Hotel Bookings</h3>
@@ -95,14 +96,33 @@
             </div>
             {% endfor %}
         </div>
+        <div id="flightBookings" class="trip-card">
+            <h3>Flight Bookings</h3>
+            {% for booking in flight_bookings %}
+            <div class="trip-details">
+                <strong>Flight Name:</strong> {{ booking.flight_name }}<br>
+                <strong>Departure Date:</strong> {{ booking.departure }}<br>
+                <strong>From City:</strong> {{ booking.from_city }}<br>
+                <strong>To City:</strong> {{ booking.to_city }}<br>
+                <strong>Paid:</strong>
+                {% if booking.paid %}
+                <span class="paid-yes">Yes</span>
+                {% else %}
+                <span class="paid-no">No</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var hotelBtn = document.getElementById('hotelBtn');
             var packageBtn = document.getElementById('packageBtn');
+            var flightBtn = document.getElementById('flightBtn');
             var hotelBookings = document.getElementById('hotelBookings');
             var packageBookings = document.getElementById('packageBookings');
+            var flightBookings = document.getElementById('flightBookings');
 
             // Initially show hotel bookings
             hotelBookings.style.display = 'block';
@@ -110,11 +130,19 @@
             hotelBtn.addEventListener('click', function () {
                 hotelBookings.style.display = 'block';
                 packageBookings.style.display = 'none';
+                flightBookings.style.display = 'none';
             });
 
             packageBtn.addEventListener('click', function () {
                 hotelBookings.style.display = 'none';
                 packageBookings.style.display = 'block';
+                flightBookings.style.display = 'none';
+            });
+
+            flightBtn.addEventListener('click', function () {
+                hotelBookings.style.display = 'none';
+                packageBookings.style.display = 'none';
+                flightBookings.style.display = 'block';
             });
         });
 

@@ -47,8 +47,8 @@
         <hr class="my-4">
         <p>Select your preferred option:</p>
         <div class="btn-group" role="group" aria-label="Select Option">
-            <a href="{% url 'hotel'%}" class="btn btn-lg btn-custom">Hotels</a>
-            <a href="#" class="btn btn-lg btn-custom">Flights</a>
+            <a href="{% url 'search' source='hotel' %}" class="btn btn-lg btn-custom">Hotels</a>
+            <a href="{% url 'search' source='flight' %}" class="btn btn-lg btn-custom">Flights</a>
         </div>
     </div>
 

@@ -48,10 +48,18 @@ class hotels(models.Model):
     city = models.CharField(max_length=20)
     check_in_date = models.DateField(default=datetime.now)
     check_out_date = models.DateField(default=datetime.now)
+class flight(models.Model):
+    name = models.CharField(primary_key=True, max_length=20)
+    image = models.ImageField(upload_to='images/', null=True, blank=True)
+    price = models.IntegerField()
+    from_city = models.CharField(max_length=30)  
+    to_city = models.CharField(max_length=30)    
+    depart = models.DateField(default=datetime.now)
 class Booking(models.Model):
     BOOKING_TYPES = (
         ('hotel', 'Hotel'),
         ('package', 'Package'),
+        ('flight', 'Flight'),
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, default='1')
