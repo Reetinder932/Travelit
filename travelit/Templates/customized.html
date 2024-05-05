@@ -1,3 +1,4 @@
+{% load static %}{% static "images" as baseUrl %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,7 +19,7 @@
         }
 
         .jumbotron {
-            background-image: url('https://source.unsplash.com/1600x900/?travel');
+            background-image: url('{% static "images/a.jpg" %}');
             background-size: cover;
             height: 110vh;
             color: white;
@@ -45,7 +46,6 @@
         <h1 class="display-4">Customized Trips</h1>
         <p class="lead">Plan your perfect getaway with ease!</p>
         <hr class="my-4">
-        <p>Select your preferred option:</p>
         <div class="btn-group" role="group" aria-label="Select Option">
             <a href="{% url 'search' source='hotel' %}" class="btn btn-lg btn-custom">Hotels</a>
             <a href="{% url 'search' source='flight' %}" class="btn btn-lg btn-custom">Flights</a>

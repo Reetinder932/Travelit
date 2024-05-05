@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from .models import Destination
 from .models import Detailed_desc
-from .models import PassengerDetail
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -27,12 +26,11 @@ import requests
 
 import random
 # MERCHANT_KEY = 'kbzk1DSbJiV_O3p5'
-
+@login_required(login_url='login')
 def index(request):
     dests = Destination.objects.all()
-    dest1 = []
-    temp =Detailed_desc.objects.get(dest_id=1)
-    dest1.append(temp)
+    dest1 =Detailed_desc.objects.all()
+    
 
     return render(request, 'index.html',{'dests': dests, 'dest1' : dest1})
 
@@ -61,7 +59,7 @@ def register(request):
         else:
             messages.info(request, 'Password is not matching ')
             return redirect('register')
-        return redirect('index')
+        
     else:
         return render(request, 'register.html')
 
@@ -76,8 +74,8 @@ def login(request):
             email = request.user.email
             print(email)
             content = 'Hello ' + request.user.first_name + ' ' + request.user.last_name + '\n' + 'You are logged in in our site.keep connected and keep travelling.'
-            dests = Destination.objects.all()
-            return render(request, 'index.html',{'dests':dests})
+            
+            return redirect('index')
         else:
             messages.info(request, 'Invalid credential')
             return redirect('login')

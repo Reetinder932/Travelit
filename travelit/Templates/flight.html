@@ -1,3 +1,4 @@
+{% load static %}{% static "images" as baseUrl %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,73 +6,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flight List</title>
-    <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
-            background-color: #f8f9fa;
+            background-image: url('{% static "images/d.jpg" %}');
+            background-size: cover;
             font-family: Arial, sans-serif;
             overflow: hidden;
-        }
-
-        .jumbotron {
-            background-image: url('https://source.unsplash.com/1600x900/?flight');
-            background-size: cover;
-            color: white;
-            height: 110vh;
+            color: #fff;
+            padding-top: 50px;
+            margin: 0;
+            min-height: 100vh;
         }
 
         .container {
             margin-top: 50px;
+            color: #333;
         }
 
         .flight-list-title {
             text-align: center;
             font-size: 36px;
             font-weight: bold;
-            color: #333;
+            color: #fff;
             margin-bottom: 30px;
         }
 
         .card {
             border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s;
+            overflow: hidden;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            color: #333;
         }
 
         .card:hover {
             transform: translateY(-5px);
         }
 
-        .card-img-top {
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-            height: 200px;
-            object-fit: cover;
-        }
-
         .card-body {
             padding: 20px;
+            position: relative;
+            z-index: 1;
+            color: #fff;
         }
 
         .card-title {
             font-size: 24px;
             margin-bottom: 10px;
-            color: #333;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+
         }
 
         .card-text {
             font-size: 18px;
             margin-bottom: 15px;
-            color: #666;
-        }
-
-        .form-control {
-            width: 100%;
-            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         .btn-book {
@@ -88,22 +83,30 @@
         .btn-book:hover {
             background-color: #0056b3;
         }
+
+        .form-control {
+            width: 70%;
+            margin-bottom: 10px;
+            color: #fff;
+            background-color: #303245;
+            border: none;
+            border-radius: 4px;
+            padding: 8px;
+        }
     </style>
 </head>
 
-<body class="jumbotron">
+<body>
     <div class="container">
         <h2 class="flight-list-title">Flights from {{ from_city }} to {{ to_city }}</h2>
         <div class="row">
             {% if flight_list %}
             {% for flight in flight_list %}
             <div class="col-md-6 mb-4">
-                <div class="card">
-                    <!-- Flight Image Placeholder -->
-                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Flight Image">
+                <div class="card" style="background-image: url('{{ flight.image.url }}');">
                     <div class="card-body">
                         <h5 class="card-title">{{ flight.name }}</h5>
-                        <p class="card-text">Price: ${{ flight.price }}</p>
+                        <p class="card-text">Price: Rs {{ flight.price }}</p>
                         <div class="form-group">
                             <label for="flight-class">Class:</label>
                             <select class="form-control flight-class" id="flight-class">
@@ -130,7 +133,6 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -139,23 +141,20 @@
         $(document).ready(function () {
             $('.btn-book').click(function () {
                 const flightName = $(this).data('name');
-                let price = parseFloat($(this).data('price')); // Change const to let
+                let price = parseFloat($(this).data('price'));
                 const flightClass = $(this).closest('.card-body').find('.flight-class').val();
                 const numPassengers = parseInt($(this).closest('.card-body').find('.num-passengers').val());
 
-                // Adjust price based on flight class
                 if (flightClass === 'business') {
-                    price *= 1.5; // Increase price by 50% for business class
+                    price *= 1.5;
                 } else if (flightClass === 'first-class') {
-                    price *= 2; // Double the price for first class
+                    price *= 2;
                 }
 
                 const totalPrice = price * numPassengers;
 
-                // Calculate total amount
                 const totalAmount = totalPrice;
 
-                // Set total amount in local storage
                 localStorage.setItem('flight_amount', totalAmount);
                 localStorage.setItem('flight_name', flightName);
 

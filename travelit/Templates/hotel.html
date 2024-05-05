@@ -1,3 +1,4 @@
+{% load static %}{% static "images" as baseUrl %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,21 +6,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hotel List</title>
-    <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-        }
-
-        .jumbotron {
-            background-image: url('https://source.unsplash.com/1600x900/?hotel');
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('{% static "images/E.jpg" %}');
             background-size: cover;
-            color: white;
-            height: 110vh;
+            color: #fff;
+            padding-top: 50px;
+            margin: 0;
+            min-height: 100vh;
         }
 
         .container {
@@ -30,42 +27,54 @@
             text-align: center;
             font-size: 36px;
             font-weight: bold;
-            color: #333;
             margin-bottom: 30px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .room-count {
+            background-color: transparent;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            color: #fff;
+            padding: 12px;
+            width: 10%;
+            box-sizing: border-box;
         }
 
         .card {
             border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s;
+            overflow: hidden;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            color: #333;
         }
 
         .card:hover {
             transform: translateY(-5px);
         }
 
-        .card-img-top {
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-            height: 200px;
-            object-fit: cover;
-        }
-
         .card-body {
             padding: 20px;
+            position: relative;
+            z-index: 1;
+            color: #fff;
         }
 
         .card-title {
             font-size: 24px;
             margin-bottom: 10px;
-            color: #333;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         .card-text {
             font-size: 18px;
             margin-bottom: 15px;
-            color: #666;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         .btn-book {
@@ -85,18 +94,17 @@
     </style>
 </head>
 
-<body class="jumbotron">
+<body>
     <div class="container">
         <h2 class="hotel-list-title">Hotels in {{ city }}</h2>
         <div class="row">
             {% if hotel1 %}
             {% for hotel in hotel1 %}
             <div class="col-md-6 mb-4">
-                <div class="card">
-                    <img src="{{ hotel.image.url }}" class="card-img-top" alt="Hotel Image">
+                <div class="card" style="background-image: url('{{ hotel.image.url }}');">
                     <div class="card-body">
                         <h5 class="card-title">{{ hotel.name }}</h5>
-                        <p class="card-text">Price: ${{ hotel.price }}</p>
+                        <p class="card-text">Price: Rs {{ hotel.price }}</p>
                         <p class="card-text">Available Rooms: <span class="available-rooms">{{ hotel.room }}</span></p>
                         <label for="room-count">Rooms:</label>
                         <input type="number" class="form-control room-count" value="1" min="1" max="{{ hotel.room }}">
@@ -114,7 +122,6 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -127,10 +134,8 @@
                 const roomCount = parseInt($(this).closest('.card-body').find('.room-count').val());
                 const totalPrice = price * roomCount;
 
-                // Calculate total amount
                 const totalAmount = totalPrice;
 
-                // Set total amount in local storage
                 localStorage.setItem('hotel_amount', totalAmount);
                 localStorage.setItem('hotel_name', hotelName);
 

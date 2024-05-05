@@ -1,3 +1,4 @@
+{% load static %}{% static "images" as baseUrl %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,6 +11,8 @@
         body {
             background-color: #f8f9fa;
             font-family: Arial, sans-serif;
+            background-image: url('{% static "images/ab.jpg" %}');
+            background-size: cover;
         }
 
         .container {
@@ -18,20 +21,29 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
+            background-color: #15172b
         }
 
         h2 {
-            color: #007bff;
+            color: white;
+            font-weight: bold;
             margin-bottom: 30px;
         }
 
         .form-group label {
             font-weight: bold;
+            color: white;
         }
 
         .form-control {
-            border-radius: 5px;
+            border-radius: 10px;
+            border-color: #007bff;
+
+            background-color: #303245;
+        }
+
+        .form-control:focus {
+            border-color: #0056b3;
         }
 
         .btn-primary {
@@ -43,13 +55,27 @@
             background-color: #0056b3;
             border-color: #0056b3;
         }
+
+        .btn-book {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-book:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <h2>Total Amount: <span id="totalAmountDisplay"></span></h2>
-        <h3>Checkout</h3>
         <form id="checkoutForm" method="POST" action="{% url 'checkout_hotel' %}">
             {% csrf_token %}
             <div class="form-group">

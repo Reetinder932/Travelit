@@ -32,14 +32,13 @@
 
 <body>
 
-    <form action="login" method="POST">
+    <form action="{%url 'login'%}" method="POST">
         {% csrf_token %}
         <div class="limiter">
             <div class="container-login100">
                 <div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
                     <form class="login100-form validate-form">
                         <span class="login100-form-title p-b-49">
-                            <!-- <font color="orange-purple">Travello</font> -->
                         </span>
 
                         <div class="wrap-input100 validate-input m-b-23" data-validate="Username is required">
@@ -79,13 +78,6 @@
 
                             <a href="register" class="txt6">
                                 <font color="orange"> Sign Up </font>
-                            </a><br>
-                            <a href="register.html" class="txt2">
-                                About Us
-                            </a>
-                            <a href="register.html" class="txt2">
-                                Contact Us
-                            </a>
 
                         </div>
                     </form>

@@ -31,15 +31,6 @@ class Detailed_desc(models.Model):
     day5 = models.CharField(max_length=200)
     day6 = models.CharField(max_length=200)
 
-class PassengerDetail(models.Model):
-    first_name = models.CharField(max_length=15)
-    last_name = models.CharField(max_length=15)
-    age = models.IntegerField(default=10)
-    username = models.CharField(max_length=30)
-    email=models.CharField(max_length=111,default='')
-    password1=models.IntegerField()
-    password2=models.IntegerField()
-
 class hotels(models.Model):
     name = models.CharField(primary_key=True, max_length=20)
     image = models.ImageField(upload_to='images/', null=True, blank=True)
